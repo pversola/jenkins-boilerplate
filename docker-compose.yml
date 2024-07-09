@@ -1,0 +1,37 @@
+version: '3.9'
+networks:
+  jenkins:
+services:
+  dind:
+    image: docker:dind
+    container_name: docker-dind
+    restart: unless-stopped
+    privileged: true
+    tty: true
+    volumes:
+      - ./data:/var/jenkins_home
+      - ./certs/docker:/certs/client
+    networks:
+      jenkins:
+        aliases: 
+          - docker
+    environment:
+      - DOCKER_TLS_CERTDIR=/certs
+  jenkins:
+    image: custom-jenkins
+    container_name: jenkins
+    restart: unless-stopped
+    ports:
+      - 8080:8080
+      - 50000:50000
+    privileged: true
+    tty: true
+    volumes:
+      - ./data:/var/jenkins_home
+      - ./certs/docker:/certs/client:ro
+    networks:
+      - jenkins
+    environment:
+      - DOCKER_HOST=tcp://docker:2376
+      - DOCKER_CERT_PATH=/certs/client
+      - DOCKER_TLS_VERIFY=1
