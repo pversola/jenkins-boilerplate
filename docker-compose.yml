@@ -18,7 +18,7 @@ services:
     environment:
       - DOCKER_TLS_CERTDIR=/certs
   jenkins:
-    image: custom-jenkins
+    build: .
     container_name: jenkins
     restart: unless-stopped
     ports:
